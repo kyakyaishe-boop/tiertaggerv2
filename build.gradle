@@ -1,39 +1,30 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
-
-base {
-    archivesName = project.archives_base_name
-}
-
 repositories {
-    maven { url = 'https://maven.fabricmc.net/' }
     mavenCentral()
-}
-
-sourceSets {
-    main {
-        java { srcDirs = ['.']; include '*.java' }
-        resources { srcDirs = ['.']; include 'fabric.mod.json', 'tiertagger.json' }
-    }
+    maven { url = 'https://maven.fabricmc.net/' }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['.']; include '**/*.java' }
+        resources { srcDirs = ['.']; include 'fabric.mod.json', 'tiertagger.json' }
+    }
 }
 
 processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
     }
 }
 
@@ -48,14 +39,14 @@ java {
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}" }
+    from('LICENSE') {
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
 publishing {
     publications {
-        create("mavenJava", MavenPublication) {
+        create('mavenJava', MavenPublication) {
             from components.java
         }
     }
